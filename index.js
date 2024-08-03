@@ -48,12 +48,29 @@ app.get('/info', (request, response) => {
   response.send(`${text}<br>${date}`)
 })
 
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  const newPerson = {
+    id: `${generateId()}`,
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(newPerson)
+  response.json(newPerson)
+})
+
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id
   persons = persons.filter(p => p.id !== id)
 
   response.status(204).end()
 })
+
+const generateId = () => {
+  return Math.floor(Math.random() * 1000000) // 1 million
+}
 
 const PORT = 3001
 app.listen(PORT, () => {
