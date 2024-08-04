@@ -51,6 +51,20 @@ app.get('/info', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'Must include a name and number'
+    })
+  }
+
+  const matchingName = persons.filter(p => p.name === body.name)
+
+  if (matchingName.length > 0) {
+    return response.status(400).json({
+      error: 'Name must be unique'
+    })
+  }
+
   const newPerson = {
     id: `${generateId()}`,
     name: body.name,
@@ -69,7 +83,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => {
-  return Math.floor(Math.random() * 1000000) // 1 million
+  return Math.floor(Math.random() * 100000) // 100k
 }
 
 const PORT = 3001
