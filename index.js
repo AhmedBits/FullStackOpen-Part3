@@ -5,7 +5,9 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :type'))
+app.use(morgan(
+  ':method :url :status :res[content-length] - :response-time ms :type'
+))
 
 morgan.token('type', (request, response) => {
   return JSON.stringify(request.body)
