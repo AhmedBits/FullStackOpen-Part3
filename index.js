@@ -1,11 +1,9 @@
-const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
-const dotenv = require('dotenv')
 const cors = require('cors')
 const app = express()
-
-dotenv.config()
+require('dotenv').config()
+const Person = require('./models/person')
 
 app.use(express.static('dist'))
 app.use(express.json())
@@ -17,26 +15,6 @@ app.use(morgan(
 morgan.token('type', (request, response) => {
   return JSON.stringify(request.body)
 })
-
-const url = process.env.MONGODB_URI
-
-mongoose.set('strictQuery',false)
-mongoose.connect(url)
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
-
-personSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Person = mongoose.model('Person', personSchema)
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
@@ -100,7 +78,7 @@ const generateId = () => {
   return Math.floor(Math.random() * 100000) // 100k
 }
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
