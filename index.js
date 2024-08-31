@@ -1,8 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
-require('dotenv').config()
 const Person = require('./models/person')
 
 app.use(express.static('dist'))
@@ -43,28 +43,18 @@ app.get('/info', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'Must include a name and number'
-    })
+  if (body.name === undefined || body.number === undefined) {
+    return response.status(400).json({ error: 'Must include a name and number' })
   }
 
-  const matchingName = persons.filter(p => p.name === body.name)
-
-  if (matchingName.length > 0) {
-    return response.status(400).json({
-      error: 'Name must be unique'
-    })
-  }
-
-  const newPerson = {
-    id: `${generateId()}`,
+  const newPerson = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
+  newPerson.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
