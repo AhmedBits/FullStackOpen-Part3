@@ -1,1 +1,1 @@
-GET https://phonebook-backend-p7h2.onrender.com/api/persons
+GET http://localhost:3001/api/persons
