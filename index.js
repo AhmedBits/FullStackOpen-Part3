@@ -16,13 +16,15 @@ morgan.token('type', (request, response) => {
   return JSON.stringify(request.body)
 })
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   const person = persons.find(p => p.id === id)
 
@@ -33,14 +35,14 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   const text = `Phonebook has info for ${persons.length} people`
   const date = new Date().toString()
 
   response.send(`${text}<br>${date}`)
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (body.name === undefined || body.number === undefined) {
@@ -52,16 +54,19 @@ app.post('/api/persons', (request, response) => {
     number: body.number
   })
 
-  newPerson.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  newPerson.save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(result => {
       response.status(204).end()
     })
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -69,8 +74,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
-
+  }
   next(error)
 }
 
