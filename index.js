@@ -25,21 +25,22 @@ app.get('/api/persons', (request, response, next) => {
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-  const id = request.params.id
-  const person = persons.find(p => p.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(request.params.id)
+    .then(person => {
+      response.json(person)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response, next) => {
-  const text = `Phonebook has info for ${persons.length} people`
-  const date = new Date().toString()
+  Person.find({})
+    .then(persons => {
+      const text = `Phonebook has info for ${persons.length} people`
+      const date = new Date().toString()
 
-  response.send(`${text}<br>${date}`)
+      response.send(`${text}<br>${date}`)
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
