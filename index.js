@@ -46,10 +46,6 @@ app.get('/info', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
-  if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({ error: 'Must include a name and number' })
-  }
-
   const newPerson = new Person({
     name: body.name,
     number: body.number,
